@@ -6,7 +6,6 @@ from tabulate import tabulate
 
 import tensorflow as tf
 from keras import backend as K
-from keras import regularizers
 from keras.layers import Embedding, Dense, TimeDistributed, concatenate, SeparableConv1D, Conv1D, Dropout
 from keras.models import Model, Input
 from sklearn.metrics import classification_report, confusion_matrix
@@ -19,7 +18,7 @@ from preprocess import DataPreprocessor
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 RESULTS_PATH = os.path.join(FILE_PATH, 'results')
-WEIGHTS_PATH = os.path.join(FILE_PATH, 'checkpoints')
+WEIGHTS_PATH = os.path.join(FILE_PATH, 'models')
 
 
 METRICS_TEMPLATE = '''

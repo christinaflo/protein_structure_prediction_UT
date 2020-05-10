@@ -12,7 +12,7 @@ FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 DATA_PATH = os.path.join(FILE_PATH, 'data')
 
 MODE_DATAFILES = {
-    'cb513'     : {'train': 'cb6133filtered.npy', 'test': 'cb513.npy'},
+    'cb513'     : {'train': 'cb5926filtered.npy', 'test': 'cb513.npy'},
     'weightq8'  : {'train': 'train_Q8_data.txt', 'test': 'test_Q8_data.txt'},
     'weightq13' : {'train': 'train_Q13_data.txt', 'test': 'test_Q13_data.txt'}
 }

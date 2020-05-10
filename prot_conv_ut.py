@@ -1,9 +1,17 @@
+import math
 from typing import Union, Callable, Optional
 from keras import backend as K
 from keras.layers import Dropout, Conv1D, concatenate, SeparableConv1D
 from keras.utils import get_custom_objects
 from keras_transformer.transformer import TransformerBlock, LayerNormalization
 
+def gelu(x):
+    """     
+    GELU activation, described in paper "Gaussian Error Linear Units (GELUs)"
+    https://arxiv.org/pdf/1606.08415.pdf
+    """     
+    c = math.sqrt(2 / math.pi)
+    return 0.5 * x * (1 + K.tanh(c * (x + 0.044715 * K.pow(x, 3))))
 
 class ConvTransformerTransition:
 
@@ -38,7 +46,7 @@ class ConvUniversalTransformerBlock(TransformerBlock):
     def __init__(self, name: str, num_heads: int, filter_size: int,
                  residual_dropout: float = 0, attention_dropout: float = 0,
                  conv_dropout: float = 0,
-                 activation: Optional[Union[str, Callable]] = 'relu',
+                 activation: Optional[Union[str, Callable]] = 'gelu',
                  compression_window_size: int = None,
                  use_masking: bool = True):
 
@@ -52,9 +60,9 @@ class ConvUniversalTransformerBlock(TransformerBlock):
                                                           activation=activation,
                                                           filter_size=filter_size)
         self.conv1 = Conv1D(name=f'{name}_conv',
-                            filters=128,
+                            filters=filter_size,
                             strides=1,
-                            activation='relu',
+                            activation=activation,
                             padding='same',
                             kernel_size=3)
         
@@ -66,30 +74,21 @@ class ConvUniversalTransformerBlock(TransformerBlock):
 
     def __call__(self, _input):
         conv1 = self.conv1(_input)
-        post_residual1 = (
-            self.addition_layer([_input, self.conv_dropout_layer(conv1)])
-            if self.vanilla_wiring
-            else self.conv_dropout_layer(self.addition_layer([_input, conv1])))
+        post_residual1 = self.conv_dropout_layer(self.addition_layer([_input, conv1]))
         norm1_output = self.norm1_layer(post_residual1)
 
         output = self.attention_layer(norm1_output)
-        post_residual2 = (
-            self.addition_layer([norm1_output, self.dropout_layer(output)])
-            if self.vanilla_wiring
-            else self.dropout_layer(self.addition_layer([norm1_output, output])))
+        post_residual2 = self.dropout_layer(self.addition_layer([norm1_output, output]))
         norm2_output = self.norm2_layer(post_residual2)
 
         output = self.transition_layer(norm2_output)
-        post_residual3 = (
-            self.addition_layer([norm2_output, self.dropout_layer(output)])
-            if self.vanilla_wiring
-            else self.dropout_layer(
-                self.addition_layer([norm2_output, output])))
+        post_residual3 = self.dropout_layer(self.addition_layer([norm2_output, output]))
         output = self.norm3_layer(post_residual3)
         return output
 
 get_custom_objects().update({
     'ConvUniversalTransformerBlock': ConvUniversalTransformerBlock, 
     'ConvTransformerTransition': ConvTransformerTransition,
+    'gelu': gelu,
 })
 

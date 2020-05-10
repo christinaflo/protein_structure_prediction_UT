@@ -1,0 +1,220 @@
+Using TensorFlow backend.
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, 700)          0                                            
+__________________________________________________________________________________________________
+embedding_1 (Embedding)         (None, 700, 126)     2772        input_1[0][0]                    
+__________________________________________________________________________________________________
+input_2 (InputLayer)            (None, 700, 22)      0                                            
+__________________________________________________________________________________________________
+concatenate_1 (Concatenate)     (None, 700, 148)     0           embedding_1[0][0]                
+                                                                 input_2[0][0]                    
+__________________________________________________________________________________________________
+layer_normalization_1 (LayerNor (None, 700, 148)     296         concatenate_1[0][0]              
+__________________________________________________________________________________________________
+conv1d_1 (Conv1D)               (None, 700, 128)     132736      layer_normalization_1[0][0]      
+__________________________________________________________________________________________________
+conv1d_2 (Conv1D)               (None, 700, 128)     94848       layer_normalization_1[0][0]      
+__________________________________________________________________________________________________
+conv1d_3 (Conv1D)               (None, 700, 256)     113920      layer_normalization_1[0][0]      
+__________________________________________________________________________________________________
+layer_normalization_2 (LayerNor (None, 700, 128)     256         conv1d_1[0][0]                   
+__________________________________________________________________________________________________
+layer_normalization_3 (LayerNor (None, 700, 128)     256         conv1d_2[0][0]                   
+__________________________________________________________________________________________________
+layer_normalization_4 (LayerNor (None, 700, 256)     512         conv1d_3[0][0]                   
+__________________________________________________________________________________________________
+concatenate_2 (Concatenate)     (None, 700, 512)     0           layer_normalization_2[0][0]      
+                                                                 layer_normalization_3[0][0]      
+                                                                 layer_normalization_4[0][0]      
+__________________________________________________________________________________________________
+dropout_1 (Dropout)             (None, 700, 512)     0           concatenate_2[0][0]              
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, 700, 128)     65664       dropout_1[0][0]                  
+__________________________________________________________________________________________________
+dropout_2 (Dropout)             (None, 700, 128)     0           dense_1[0][0]                    
+__________________________________________________________________________________________________
+coordinate_embedding (Transform (None, 700, 128)     90368       dropout_2[0][0]                  
+                                                                 adaptive_computation_time[0][0]  
+                                                                 adaptive_computation_time[1][0]  
+                                                                 adaptive_computation_time[2][0]  
+                                                                 adaptive_computation_time[3][0]  
+                                                                 adaptive_computation_time[4][0]  
+__________________________________________________________________________________________________
+universal_transformer_self_atte (None, 700, 128)     65536       coordinate_embedding[0][0]       
+                                                                 coordinate_embedding[1][0]       
+                                                                 coordinate_embedding[2][0]       
+                                                                 coordinate_embedding[3][0]       
+                                                                 coordinate_embedding[4][0]       
+                                                                 coordinate_embedding[5][0]       
+__________________________________________________________________________________________________
+universal_transformer_add (Add) (None, 700, 128)     0           coordinate_embedding[0][0]       
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 conv1d_6[0][0]                   
+                                                                 coordinate_embedding[1][0]       
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 conv1d_6[1][0]                   
+                                                                 coordinate_embedding[2][0]       
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 conv1d_6[2][0]                   
+                                                                 coordinate_embedding[3][0]       
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 conv1d_6[3][0]                   
+                                                                 coordinate_embedding[4][0]       
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 conv1d_6[4][0]                   
+                                                                 coordinate_embedding[5][0]       
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 conv1d_6[5][0]                   
+__________________________________________________________________________________________________
+universal_transformer_dropout ( (None, 700, 128)     0           universal_transformer_add[0][0]  
+                                                                 universal_transformer_add[1][0]  
+                                                                 universal_transformer_add[2][0]  
+                                                                 universal_transformer_add[3][0]  
+                                                                 universal_transformer_add[4][0]  
+                                                                 universal_transformer_add[5][0]  
+                                                                 universal_transformer_add[6][0]  
+                                                                 universal_transformer_add[7][0]  
+                                                                 universal_transformer_add[8][0]  
+                                                                 universal_transformer_add[9][0]  
+                                                                 universal_transformer_add[10][0] 
+                                                                 universal_transformer_add[11][0] 
+__________________________________________________________________________________________________
+universal_transformer_normaliza (None, 700, 128)     256         universal_transformer_dropout[0][
+                                                                 universal_transformer_dropout[2][
+                                                                 universal_transformer_dropout[4][
+                                                                 universal_transformer_dropout[6][
+                                                                 universal_transformer_dropout[8][
+                                                                 universal_transformer_dropout[10]
+__________________________________________________________________________________________________
+conv1d_4 (Conv1D)               (None, 700, 256)     98560       universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+__________________________________________________________________________________________________
+conv1d_5 (Conv1D)               (None, 700, 512)     393728      conv1d_4[0][0]                   
+                                                                 conv1d_4[1][0]                   
+                                                                 conv1d_4[2][0]                   
+                                                                 conv1d_4[3][0]                   
+                                                                 conv1d_4[4][0]                   
+                                                                 conv1d_4[5][0]                   
+__________________________________________________________________________________________________
+dropout_3 (Dropout)             (None, 700, 512)     0           conv1d_5[0][0]                   
+                                                                 conv1d_5[1][0]                   
+                                                                 conv1d_5[2][0]                   
+                                                                 conv1d_5[3][0]                   
+                                                                 conv1d_5[4][0]                   
+                                                                 conv1d_5[5][0]                   
+__________________________________________________________________________________________________
+conv1d_6 (Conv1D)               (None, 700, 128)     327808      dropout_3[0][0]                  
+                                                                 dropout_3[1][0]                  
+                                                                 dropout_3[2][0]                  
+                                                                 dropout_3[3][0]                  
+                                                                 dropout_3[4][0]                  
+                                                                 dropout_3[5][0]                  
+__________________________________________________________________________________________________
+universal_transformer_normaliza (None, 700, 128)     256         universal_transformer_dropout[1][
+                                                                 universal_transformer_dropout[3][
+                                                                 universal_transformer_dropout[5][
+                                                                 universal_transformer_dropout[7][
+                                                                 universal_transformer_dropout[9][
+                                                                 universal_transformer_dropout[11]
+__________________________________________________________________________________________________
+adaptive_computation_time (Tran [(None, 700, 128), ( 129         universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+__________________________________________________________________________________________________
+time_distributed_1 (TimeDistrib (None, 700, 9)       1161        adaptive_computation_time[5][1]  
+==================================================================================================
+Total params: 1,389,062
+Trainable params: 1,389,062
+Non-trainable params: 0
+__________________________________________________________________________________________________
+Train on 5534 samples, validate on 514 samples
+Epoch 1/15
+2020-05-07 20:15:52.502710: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2020-05-07 20:15:52.594296: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:964] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-05-07 20:15:52.595129: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1411] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:04.0
+totalMemory: 11.17GiB freeMemory: 11.09GiB
+2020-05-07 20:15:52.595172: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1490] Adding visible gpu devices: 0
+2020-05-07 20:15:52.907008: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-05-07 20:15:52.907088: I tensorflow/core/common_runtime/gpu/gpu_device.cc:977]      0 
+2020-05-07 20:15:52.907099: I tensorflow/core/common_runtime/gpu/gpu_device.cc:990] 0:   N 
+2020-05-07 20:15:52.907236: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1103] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10745 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:00:04.0, compute capability: 3.7)
+5534/5534 [==============================] - 260s 47ms/step - loss: 0.4219 - acc: 0.8604 - accuracy: 0.5563 - val_loss: 0.2582 - val_acc: 0.9150 - val_accuracy: 0.6378
+Epoch 2/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.3018 - acc: 0.8985 - accuracy: 0.6688 - val_loss: 0.2515 - val_acc: 0.9181 - val_accuracy: 0.6507
+Epoch 3/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2845 - acc: 0.9045 - accuracy: 0.6885 - val_loss: 0.2400 - val_acc: 0.9217 - val_accuracy: 0.6666
+Epoch 4/15
+5534/5534 [==============================] - 249s 45ms/step - loss: 0.2766 - acc: 0.9072 - accuracy: 0.6969 - val_loss: 0.2420 - val_acc: 0.9210 - val_accuracy: 0.6633
+Epoch 5/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2697 - acc: 0.9095 - accuracy: 0.7042 - val_loss: 0.2332 - val_acc: 0.9238 - val_accuracy: 0.6754
+Epoch 6/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2655 - acc: 0.9109 - accuracy: 0.7093 - val_loss: 0.2312 - val_acc: 0.9249 - val_accuracy: 0.6803
+Epoch 7/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2618 - acc: 0.9123 - accuracy: 0.7136 - val_loss: 0.2400 - val_acc: 0.9240 - val_accuracy: 0.6761
+Epoch 8/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2591 - acc: 0.9131 - accuracy: 0.7164 - val_loss: 0.2276 - val_acc: 0.9260 - val_accuracy: 0.6851
+Epoch 9/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2565 - acc: 0.9140 - accuracy: 0.7191 - val_loss: 0.2287 - val_acc: 0.9260 - val_accuracy: 0.6854
+Epoch 10/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2539 - acc: 0.9150 - accuracy: 0.7225 - val_loss: 0.2279 - val_acc: 0.9265 - val_accuracy: 0.6871
+Epoch 11/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2524 - acc: 0.9155 - accuracy: 0.7244 - val_loss: 0.2304 - val_acc: 0.9258 - val_accuracy: 0.6842
+Epoch 12/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2510 - acc: 0.9161 - accuracy: 0.7260 - val_loss: 0.2267 - val_acc: 0.9268 - val_accuracy: 0.6881
+Epoch 13/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2485 - acc: 0.9169 - accuracy: 0.7292 - val_loss: 0.2276 - val_acc: 0.9271 - val_accuracy: 0.6901
+Epoch 14/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2474 - acc: 0.9174 - accuracy: 0.7304 - val_loss: 0.2298 - val_acc: 0.9270 - val_accuracy: 0.6894
+Epoch 15/15
+5534/5534 [==============================] - 250s 45ms/step - loss: 0.2455 - acc: 0.9181 - accuracy: 0.7328 - val_loss: 0.2290 - val_acc: 0.9272 - val_accuracy: 0.6902
+514/514 [==============================] - 7s 13ms/step
+[0.22895674019008294, 0.9272456869540975, 0.6909279299153428]
+
+# ------------------------------------------------
+# Confusion Matrix & Metrics: cb513                  
+# ------------------------------------------------
++----+-----+-------+-----+-------+-----+-------+------+------+
+|    |   B |     E |   G |     H |   I |     L |    S |    T |
+|----+-----+-------+-----+-------+-----+-------+------+------|
+| B  |  52 |   292 |  17 |   117 |   0 |   534 |   72 |   97 |
+| E  |  26 | 14724 |  70 |   584 |   0 |  2028 |  237 |  347 |
+| G  |   0 |   174 | 868 |  1008 |   0 |   514 |   94 |  474 |
+| H  |   6 |   220 | 235 | 24567 |   0 |   562 |   93 |  474 |
+| I  |   0 |     0 |   0 |    23 |   0 |     4 |    0 |    3 |
+| L  |  30 |  2930 | 237 |  1249 |   0 | 11132 | 1187 | 1155 |
+| S  |   9 |   875 | 182 |   836 |   0 |  2867 | 2140 | 1407 |
+| T  |   2 |   463 | 465 |  1962 |   0 |  1486 |  530 | 5105 |
++----+-----+-------+-----+-------+-----+-------+------+------+
+
+              precision    recall  f1-score   support
+
+           B       0.42      0.04      0.08      1181
+           E       0.75      0.82      0.78     18016
+           G       0.42      0.28      0.33      3132
+           H       0.81      0.94      0.87     26157
+           I       0.00      0.00      0.00        30
+           L       0.58      0.62      0.60     17920
+           S       0.49      0.26      0.34      8316
+           T       0.56      0.51      0.54     10013
+
+    accuracy                           0.69     84765
+   macro avg       0.50      0.43      0.44     84765
+weighted avg       0.67      0.69      0.67     84765
+

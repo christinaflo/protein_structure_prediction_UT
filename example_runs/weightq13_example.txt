@@ -1,0 +1,245 @@
+Using TensorFlow backend.
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, 700)          0                                            
+__________________________________________________________________________________________________
+embedding_1 (Embedding)         (None, 700, 128)     2688        input_1[0][0]                    
+__________________________________________________________________________________________________
+input_2 (InputLayer)            (None, 700, 22)      0                                            
+__________________________________________________________________________________________________
+concatenate_1 (Concatenate)     (None, 700, 150)     0           embedding_1[0][0]                
+                                                                 input_2[0][0]                    
+__________________________________________________________________________________________________
+layer_normalization_1 (LayerNor (None, 700, 150)     300         concatenate_1[0][0]              
+__________________________________________________________________________________________________
+conv1d_1 (Conv1D)               (None, 700, 128)     19328       layer_normalization_1[0][0]      
+__________________________________________________________________________________________________
+layer_normalization_2 (LayerNor (None, 700, 128)     256         conv1d_1[0][0]                   
+__________________________________________________________________________________________________
+coordinate_embedding (Transform (None, 700, 128)     90368       layer_normalization_2[0][0]      
+                                                                 adaptive_computation_time[0][0]  
+                                                                 adaptive_computation_time[1][0]  
+                                                                 adaptive_computation_time[2][0]  
+                                                                 adaptive_computation_time[3][0]  
+                                                                 adaptive_computation_time[4][0]  
+__________________________________________________________________________________________________
+universal_transformer_conv (Con (None, 700, 128)     49280       coordinate_embedding[0][0]       
+                                                                 coordinate_embedding[1][0]       
+                                                                 coordinate_embedding[2][0]       
+                                                                 coordinate_embedding[3][0]       
+                                                                 coordinate_embedding[4][0]       
+                                                                 coordinate_embedding[5][0]       
+__________________________________________________________________________________________________
+universal_transformer_add (Add) (None, 700, 128)     0           coordinate_embedding[0][0]       
+                                                                 universal_transformer_conv[0][0] 
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_transition_
+                                                                 coordinate_embedding[1][0]       
+                                                                 universal_transformer_conv[1][0] 
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_transition_
+                                                                 coordinate_embedding[2][0]       
+                                                                 universal_transformer_conv[2][0] 
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_transition_
+                                                                 coordinate_embedding[3][0]       
+                                                                 universal_transformer_conv[3][0] 
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_transition_
+                                                                 coordinate_embedding[4][0]       
+                                                                 universal_transformer_conv[4][0] 
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_transition_
+                                                                 coordinate_embedding[5][0]       
+                                                                 universal_transformer_conv[5][0] 
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_self_attent
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_transition_
+__________________________________________________________________________________________________
+dropout_1 (Dropout)             (None, 700, 128)     0           universal_transformer_add[0][0]  
+                                                                 universal_transformer_add[3][0]  
+                                                                 universal_transformer_add[6][0]  
+                                                                 universal_transformer_add[9][0]  
+                                                                 universal_transformer_add[12][0] 
+                                                                 universal_transformer_add[15][0] 
+__________________________________________________________________________________________________
+universal_transformer_normaliza (None, 700, 128)     256         dropout_1[0][0]                  
+                                                                 dropout_1[1][0]                  
+                                                                 dropout_1[2][0]                  
+                                                                 dropout_1[3][0]                  
+                                                                 dropout_1[4][0]                  
+                                                                 dropout_1[5][0]                  
+__________________________________________________________________________________________________
+universal_transformer_self_atte (None, 700, 128)     65536       universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+__________________________________________________________________________________________________
+universal_transformer_dropout ( (None, 700, 128)     0           universal_transformer_add[1][0]  
+                                                                 universal_transformer_add[2][0]  
+                                                                 universal_transformer_add[4][0]  
+                                                                 universal_transformer_add[5][0]  
+                                                                 universal_transformer_add[7][0]  
+                                                                 universal_transformer_add[8][0]  
+                                                                 universal_transformer_add[10][0] 
+                                                                 universal_transformer_add[11][0] 
+                                                                 universal_transformer_add[13][0] 
+                                                                 universal_transformer_add[14][0] 
+                                                                 universal_transformer_add[16][0] 
+                                                                 universal_transformer_add[17][0] 
+__________________________________________________________________________________________________
+universal_transformer_normaliza (None, 700, 128)     256         universal_transformer_dropout[0][
+                                                                 universal_transformer_dropout[2][
+                                                                 universal_transformer_dropout[4][
+                                                                 universal_transformer_dropout[6][
+                                                                 universal_transformer_dropout[8][
+                                                                 universal_transformer_dropout[10]
+__________________________________________________________________________________________________
+universal_transformer_transitio (None, 700, 256)     98560       universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+__________________________________________________________________________________________________
+universal_transformer_transitio (None, 700, 256)     512         universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+__________________________________________________________________________________________________
+universal_transformer_transitio (None, 700, 512)     393728      universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+__________________________________________________________________________________________________
+universal_transformer_transitio (None, 700, 128)     327808      universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+                                                                 universal_transformer_transition_
+__________________________________________________________________________________________________
+universal_transformer_normaliza (None, 700, 128)     256         universal_transformer_dropout[1][
+                                                                 universal_transformer_dropout[3][
+                                                                 universal_transformer_dropout[5][
+                                                                 universal_transformer_dropout[7][
+                                                                 universal_transformer_dropout[9][
+                                                                 universal_transformer_dropout[11]
+__________________________________________________________________________________________________
+adaptive_computation_time (Tran [(None, 700, 128), ( 129         universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+                                                                 universal_transformer_normalizati
+__________________________________________________________________________________________________
+time_distributed_1 (TimeDistrib (None, 700, 14)      1806        adaptive_computation_time[5][1]  
+==================================================================================================
+Total params: 1,051,067
+Trainable params: 1,051,067
+Non-trainable params: 0
+__________________________________________________________________________________________________
+Train on 9859 samples, validate on 4621 samples
+Epoch 1/15
+2020-05-10 06:03:39.548107: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2020-05-10 06:03:39.649726: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:964] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-05-10 06:03:39.650554: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1411] Found device 0 with properties: 
+name: Tesla K80 major: 3 minor: 7 memoryClockRate(GHz): 0.8235
+pciBusID: 0000:00:04.0
+totalMemory: 11.17GiB freeMemory: 11.09GiB
+2020-05-10 06:03:39.650630: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1490] Adding visible gpu devices: 0
+2020-05-10 06:03:39.898376: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-05-10 06:03:39.898455: I tensorflow/core/common_runtime/gpu/gpu_device.cc:977]      0 
+2020-05-10 06:03:39.898475: I tensorflow/core/common_runtime/gpu/gpu_device.cc:990] 0:   N 
+2020-05-10 06:03:39.898673: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1103] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10745 MB memory) -> physical GPU (device: 0, name: Tesla K80, pci bus id: 0000:00:04.0, compute capability: 3.7)
+9859/9859 [==============================] - 538s 55ms/step - loss: 0.5660 - acc: 0.8253 - accuracy: 0.4967 - val_loss: 0.4233 - val_acc: 0.8660 - val_accuracy: 0.5817
+Epoch 2/15
+9859/9859 [==============================] - 524s 53ms/step - loss: 0.4051 - acc: 0.8670 - accuracy: 0.6094 - val_loss: 0.3780 - val_acc: 0.8787 - val_accuracy: 0.6212
+Epoch 3/15
+9859/9859 [==============================] - 527s 53ms/step - loss: 0.3826 - acc: 0.8738 - accuracy: 0.6298 - val_loss: 0.3552 - val_acc: 0.8829 - val_accuracy: 0.6345
+Epoch 4/15
+9859/9859 [==============================] - 527s 53ms/step - loss: 0.3705 - acc: 0.8776 - accuracy: 0.6406 - val_loss: 0.3562 - val_acc: 0.8829 - val_accuracy: 0.6343
+Epoch 5/15
+9859/9859 [==============================] - 527s 53ms/step - loss: 0.3613 - acc: 0.8806 - accuracy: 0.6496 - val_loss: 0.3450 - val_acc: 0.8865 - val_accuracy: 0.6458
+Epoch 6/15
+9859/9859 [==============================] - 530s 54ms/step - loss: 0.3556 - acc: 0.8825 - accuracy: 0.6551 - val_loss: 0.3296 - val_acc: 0.8913 - val_accuracy: 0.6609
+Epoch 7/15
+9859/9859 [==============================] - 530s 54ms/step - loss: 0.3503 - acc: 0.8843 - accuracy: 0.6602 - val_loss: 0.3267 - val_acc: 0.8921 - val_accuracy: 0.6633
+Epoch 8/15
+9859/9859 [==============================] - 529s 54ms/step - loss: 0.3456 - acc: 0.8858 - accuracy: 0.6646 - val_loss: 0.3282 - val_acc: 0.8920 - val_accuracy: 0.6630
+Epoch 9/15
+9859/9859 [==============================] - 531s 54ms/step - loss: 0.3418 - acc: 0.8871 - accuracy: 0.6685 - val_loss: 0.3207 - val_acc: 0.8945 - val_accuracy: 0.6711
+Epoch 10/15
+9859/9859 [==============================] - 530s 54ms/step - loss: 0.3384 - acc: 0.8882 - accuracy: 0.6717 - val_loss: 0.3208 - val_acc: 0.8953 - val_accuracy: 0.6732
+Epoch 11/15
+9859/9859 [==============================] - 530s 54ms/step - loss: 0.3362 - acc: 0.8890 - accuracy: 0.6740 - val_loss: 0.3147 - val_acc: 0.8963 - val_accuracy: 0.6766
+Epoch 12/15
+9859/9859 [==============================] - 529s 54ms/step - loss: 0.3322 - acc: 0.8901 - accuracy: 0.6775 - val_loss: 0.3571 - val_acc: 0.8866 - val_accuracy: 0.6463
+Epoch 13/15
+9859/9859 [==============================] - 530s 54ms/step - loss: 0.3297 - acc: 0.8910 - accuracy: 0.6800 - val_loss: 0.3132 - val_acc: 0.8970 - val_accuracy: 0.6787
+Epoch 14/15
+9859/9859 [==============================] - 530s 54ms/step - loss: 0.3270 - acc: 0.8918 - accuracy: 0.6825 - val_loss: 0.3073 - val_acc: 0.8990 - val_accuracy: 0.6849
+Epoch 15/15
+9859/9859 [==============================] - 530s 54ms/step - loss: 0.3239 - acc: 0.8929 - accuracy: 0.6855 - val_loss: 0.3130 - val_acc: 0.8983 - val_accuracy: 0.6827
+4621/4621 [==============================] - 64s 14ms/step
+[0.3129716114522162, 0.8982508457524775, 0.6822302612977688]
+
+# ------------------------------------------------
+# Confusion Matrix & Metrics: weightq13                  
+# ------------------------------------------------
++----+-------+-----+--------+------+-------+--------+-----+-----+-------+-------+-------+-------+-------+
+|    |     A |   B |      C |    E |     G |      H |   I |   M |     P |     Q |     S |     T |     Z |
+|----+-------+-----+--------+------+-------+--------+-----+-----+-------+-------+-------+-------+-------|
+| A  | 31602 |  17 |   1097 |  187 |    50 |    587 |   0 |  36 |    44 |    48 |   202 |   151 | 19451 |
+| B  |    89 | 954 |   5185 |   12 |   167 |    868 |   0 |   5 |    37 |   123 |   915 |   584 |  2236 |
+| C  |   938 | 352 | 135999 |  600 |  2523 |  14002 |   0 |   9 |   449 |  2458 | 17611 |  9703 | 22126 |
+| E  |  1841 |   5 |   2294 | 3953 |   100 |    414 |   0 |  70 |   257 |   365 |  1023 |   478 |  4690 |
+| G  |    31 |  22 |   5920 |   40 | 13859 |  11019 |   0 |   0 |    10 |    51 |  1723 |  4945 |  1204 |
+| H  |   118 |  20 |   5514 |   17 |  2123 | 327233 |   0 |   0 |     9 |    35 |  1386 |  4575 |  1049 |
+| I  |     0 |   0 |     21 |    0 |     2 |    107 |   0 |   0 |     0 |     0 |     6 |     9 |     4 |
+| M  |  2261 |   3 |    280 |  116 |    15 |    183 |   0 | 525 |   320 |   292 |    42 |    15 |  2994 |
+| P  |  1146 |  10 |    441 |  290 |    15 |    314 |   0 | 135 | 10929 |  2461 |    62 |    48 |  1437 |
+| Q  |   986 |  40 |   5547 |  195 |   124 |   1055 |   0 |  88 |  2500 | 10094 |   499 |   223 |  7635 |
+| S  |   165 | 104 |  28371 |  325 |  1634 |   7253 |   0 |   3 |    90 |   497 | 31783 | 10954 |  5639 |
+| T  |    93 |  41 |  15638 |  102 |  4949 |  21976 |   0 |   1 |    23 |   110 |  8598 | 60963 |  2701 |
+| Z  |  9034 | 210 |  16535 |  470 |   369 |   2363 |   0 |  56 |   111 |   471 |  2696 |  1415 | 77370 |
++----+-------+-----+--------+------+-------+--------+-----+-----+-------+-------+-------+-------+-------+
+
+              precision    recall  f1-score   support
+
+           A       0.65      0.59      0.62     53472
+           B       0.54      0.09      0.15     11175
+           C       0.61      0.66      0.63    206770
+           E       0.63      0.26      0.36     15490
+           G       0.53      0.36      0.43     38824
+           H       0.84      0.96      0.90    342079
+           I       0.00      0.00      0.00       149
+           M       0.57      0.07      0.13      7046
+           P       0.74      0.63      0.68     17288
+           Q       0.59      0.35      0.44     28986
+           S       0.48      0.37      0.41     86818
+           T       0.65      0.53      0.58    115195
+           Z       0.52      0.70      0.60    111100
+
+    accuracy                           0.68   1034392
+   macro avg       0.57      0.43      0.46   1034392
+weighted avg       0.67      0.68      0.67   1034392
+
