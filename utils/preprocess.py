@@ -10,13 +10,12 @@ import re
 import numpy as np
 import pandas as pd
 from collections import namedtuple
-
 from keras.preprocessing import text, sequence
 from keras.utils import to_categorical
 
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
-DATA_PATH = os.path.join(FILE_PATH, 'data')
+DATA_PATH = os.path.join(FILE_PATH, '../data')
 
 MODE_DATAFILES = {
     'cb513'     : {'train': 'cb5926filtered.npy',
@@ -93,7 +92,8 @@ class DataPreprocessor:
         load_func = 'load_cb513_data' if self.mode == 'cb513' else 'load_pdb_weight_data'
 
         for split_type in ['train', 'test', 'validate']:
-            seq_df, profile = getattr(self, load_func)(self.train_test_files[split_type], self.maxlen_seq)
+            filepath = os.path.join(DATA_PATH, self.train_test_files[split_type])
+            seq_df, profile = getattr(self, load_func)(filepath, self.maxlen_seq)
             # Limit length to specified max
             tokenizer_input_df = seq_df[seq_df['input'].map(len) <= self.maxlen_seq]
             inputs, targets = tokenizer_input_df.values.T
@@ -115,13 +115,12 @@ class DataPreprocessor:
                                                        labels=y)
     
     @staticmethod
-    def load_cb513_data(filename, max_len):
+    def load_cb513_data(filepath, max_len):
         """
         Parse CB513 and retrieve input sequences,
         output secondary structure, and pssm.
         """
 
-        filepath = os.path.join(DATA_PATH, filename)
         data = np.load(filepath)
 
         # Extract needed features
@@ -141,13 +140,12 @@ class DataPreprocessor:
         return train_df, profile_padded
 
     @staticmethod
-    def load_pdb_weight_data(filename, max_len):
+    def load_pdb_weight_data(filepath, max_len):
         """
         Parse Weighted PDB and retrieve input sequences,
         output secondary structure, and pssm.
         """
 
-        filepath = os.path.join(DATA_PATH, filename)
         residue_array, q13_array, pssm_big = list(), list(), list()
 
         with open(filepath, 'r') as f_in:

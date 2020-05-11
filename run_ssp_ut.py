@@ -8,6 +8,7 @@ Contains CLI that allows user to specify which action to take (train, predict, m
 
 import os
 import click
+import yaml
 import numpy as np
 import pandas as pd
 from tabulate import tabulate
@@ -21,14 +22,18 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 from keras_transformer.position import TransformerCoordinateEmbedding
 from keras_transformer.transformer import TransformerACT, LayerNormalization
-from prot_conv_ut import ConvUniversalTransformerBlock
+from conv_universal_transformer import ConvUniversalTransformerBlock
 
-from preprocess import DataPreprocessor
+from utils.preprocess import DataPreprocessor
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 RESULTS_PATH = os.path.join(FILE_PATH, 'results')
 WEIGHTS_PATH = os.path.join(FILE_PATH, 'models')
 
+CONFIG = yaml.safe_load(open('model_config.yaml', "r"))
+
+MAXLEN_SEQ = 700
+PSSM_SIZE = 22
 
 METRICS_TEMPLATE = '''
 # ------------------------------------------------
@@ -38,11 +43,6 @@ METRICS_TEMPLATE = '''
 
 {}
 '''
-
-
-MAXLEN_SEQ = 700
-PSSM_SIZE = 22
-EMBED_SIZE = 128
 
 
 #--------------------------------------------------------------------------------------------
@@ -67,8 +67,11 @@ def onehot_to_seq(oh_seq, index):
 #--------------------------------------------------------------------------------------------
 
 
-def prot_universal_transformer_model(input_size, embed_size, input_dim, num_labels):
+def prot_universal_transformer_model(input_size, input_dim, num_labels):
     """Builds the model."""
+
+    model_params = CONFIG['model_params']
+    embed_size = model_params['embed_size']
 
     seq_in = Input(shape=(input_size,))
     pssm_in = Input(shape=(input_size, PSSM_SIZE))
@@ -87,19 +90,19 @@ def prot_universal_transformer_model(input_size, embed_size, input_dim, num_labe
     ut_x = LayerNormalization()(conv1)
 
     # Define positional/timestep embedding layer, UT block, and ACT
-    transformer_layers = 6
+    transformer_layers = model_params['transformer_layers']
     coordinate_embedding_layer = TransformerCoordinateEmbedding(transformer_layers,
                                                                 name='coordinate_embedding')
     act_layer = TransformerACT(name='adaptive_computation_time')
     transformer_block = ConvUniversalTransformerBlock(
                 name='universal_transformer',
-                num_heads=4,
+                num_heads=model_params['attention_heads'],
                 filter_size=embed_size,
-                residual_dropout=0.1,
-                attention_dropout=0.1,
-                conv_dropout=0.2,
+                residual_dropout=model_params['residual_dropout'],
+                attention_dropout=model_params['attention_dropout'],
+                conv_dropout=model_params['conv_dropout'],
                 # For bi-directional attention, disable masking
-                use_masking=False)
+                use_masking=model_params['mask_attention'])
 
     # Run UT blocks
     act_output = ut_x
@@ -116,7 +119,7 @@ def prot_universal_transformer_model(input_size, embed_size, input_dim, num_labe
 
     model = Model([seq_in, pssm_in], y)
     model.summary()
-    model.compile(optimizer='Nadam',
+    model.compile(optimizer=model_params['optimizer'],
                   loss="categorical_crossentropy",
                   metrics=["accuracy", accuracy])
     return model
@@ -159,8 +162,7 @@ def cli():
 @click.argument('results_file', type=click.Path(exists=True))
 def metrics(results_file):
     """
-    Metrics command expects a csv file with 'actual' and 'expected'
-    columns of secondary structure labels.
+    Display metrics for train/predict CSV results file.
     """
     results = pd.read_csv(results_file)
     display_metrics(results)
@@ -170,14 +172,14 @@ def metrics(results_file):
 @click.argument('weights_file', type=click.Path(exists=True))
 def predict(mode, weights_file):
     """
-    Predict command expects a dataset mode and the path to an h5 file with
+    Predict with model given a specified dataset mode and the path to an h5 file with
     the model weights.
     """
 
     # Get test data and predict
     preprocessor = DataPreprocessor(mode=mode, maxlen_seq=MAXLEN_SEQ)
     test = preprocessor.get_test_data()
-    model = prot_universal_transformer_model(MAXLEN_SEQ, EMBED_SIZE, preprocessor.num_words, preprocessor.num_labels)
+    model = prot_universal_transformer_model(MAXLEN_SEQ, preprocessor.num_words, preprocessor.num_labels)
 
     model.load_weights(weights_file)
 
@@ -201,33 +203,32 @@ def predict(mode, weights_file):
 
 @cli.command()
 @click.argument('mode', type=click.Choice(['cb513', 'weightq8', 'weightq13']))
-def train(mode):
+@click.option('--validate-test', is_flag=True, help='Use test set as validation.')
+def train(mode, validate_test):
     """
-    Train command expects a dataset mode train/test with. Outputs the model weights,
+    Train model given a specified dataset mode. Outputs the model weights,
     prediction results, and displays metrics.
     """
 
+    run_config = CONFIG['run_params']
     preprocessor = DataPreprocessor(mode=mode, maxlen_seq=MAXLEN_SEQ)
 
     train = preprocessor.get_train_data()
     test = preprocessor.get_test_data()
-    validate = preprocessor.get_validate_data()
+    validate = test if validate_test else preprocessor.get_validate_data()
 
-    if not validate:
-        validate = test
-
-    model = prot_universal_transformer_model(MAXLEN_SEQ, EMBED_SIZE, preprocessor.num_words,
+    model = prot_universal_transformer_model(MAXLEN_SEQ, preprocessor.num_words,
                                              preprocessor.num_labels)
 
     # Train model for 15 epochs with batch size 16
     model.fit([train.sequence, train.profile], train.labels,
-              batch_size=16, epochs=15,
+              batch_size=run_config['batch_size'], epochs=run_config['epochs'],
               validation_data=([validate.sequence, validate.profile], validate.labels),
               verbose=1)
 
     # Evaluate test set
     acc = model.evaluate([test.sequence, test.profile], test.labels)
-    click.echo(f'Test Set Evaluation:\n val_loss:{acc[0]}, val_acc:{acc[1]}, val_accuracy:{acc[2]}')
+    click.echo(f'Test Set Evaluation:\nval_loss:{acc[0]}, val_acc:{acc[1]}, val_accuracy:{acc[2]}')
 
     predicted = model.predict([test.sequence, test.profile])
 

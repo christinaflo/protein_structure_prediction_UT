@@ -63,13 +63,13 @@ def series_from_file(filename):
 
 def run_inference(filename, dataset):
     if dataset == 'PDB':
-        infile='./data/{a}'.format(a=filename)
+        infile='../data/{a}'.format(a=filename)
         f = filename.split('_')
-        outfile='./data/{a}_vectors.pkl'.format(a='_'.join([f[0],f[1]]))
+        outfile='../data/{a}_vectors.pkl'.format(a='_'.join([f[0],f[1]]))
         seqs = series_from_file(infile)
     else:
-        infile='./data/{a}'.format(a=filename)
-        outfile='./data/{a}_vectors.pkl'.format(a=filename[:-4])
+        infile='../data/{a}'.format(a=filename)
+        outfile='../data/{a}_vectors.pkl'.format(a=filename[:-4])
         seqs = load_augmented_data(infile, 700)
     batch_size = 1
     # set up babbler object
