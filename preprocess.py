@@ -1,3 +1,10 @@
+"""
+Extracts and parses train, validation, and test data from the following datasets:
+    1. CullPDB 5926 (cb513)
+    2. Redundancy-weighted PDB Q8 (weightq8)
+    3. Redundancy-weighted PDB Q13 (weightq13)
+"""
+
 import os
 import re
 import numpy as np
@@ -12,9 +19,17 @@ FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 DATA_PATH = os.path.join(FILE_PATH, 'data')
 
 MODE_DATAFILES = {
-    'cb513'     : {'train': 'cb5926filtered.npy', 'test': 'cb513.npy'},
-    'weightq8'  : {'train': 'train_Q8_data.txt', 'test': 'test_Q8_data.txt'},
-    'weightq13' : {'train': 'train_Q13_data.txt', 'test': 'test_Q13_data.txt'}
+    'cb513'     : {'train': 'cb5926filtered.npy',
+                   'test': 'cb513.npy',
+                   'validate': 'cb5926_validate.npy'},
+
+    'weightq8'  : {'train': 'train_Q8_data.txt',
+                   'test': 'test_Q8_data.txt',
+                   'validate':  'validate_Q8_data.txt'},
+
+    'weightq13' : {'train': 'train_Q13_data.txt',
+                   'test': 'test_Q13_data.txt',
+                   'validate': 'validate_Q13_data.txt'}
 }
 
 RESIDUES = ['A', 'C', 'E', 'D', 'G', 'F', 'I', 'H', 'K', 'M', 'L', 'N', 'Q', 'P', 'S', 'R', 'T', 'W', 'V', 'Y', 'X','NoSeq']
@@ -24,6 +39,8 @@ DataSplit = namedtuple('DataSplit', ['seq_df', 'profile', 'sequence', 'labels'])
 
 
 class DataPreprocessor:
+    """Drives data preprocessing."""
+
     def __init__(self, mode, maxlen_seq):
         self.mode = mode
         self.maxlen_seq = maxlen_seq
@@ -35,43 +52,58 @@ class DataPreprocessor:
 
     @property
     def train_test_files(self):
+        """Get filenames associated with the dataset mode."""
         return MODE_DATAFILES[self.mode]
 
     @property
     def input_token_map(self):
+        """Map token id to input value in order to decode results."""
         return dict((v, k) for k, v in self.input_tokenizer.word_index.items())
 
     @property
     def target_token_map(self):
+        """Map token id to target value in order to decode results."""
         return dict((v, k) for k, v in self.target_tokenizer.word_index.items())
 
     @property
     def num_words(self):
+        """Number of unique tokens in the input."""
         return len(self.input_tokenizer.word_index) + 1
 
     @property
     def num_labels(self):
+        """Number of unique labels in the target."""
         return len(self.target_tokenizer.word_index) + 1
     
     def get_train_data(self):
+        """Retrieve training data."""
         return self.dataset_split.get('train')
 
     def get_test_data(self):
+        """Retrieve test data."""
         return self.dataset_split.get('test')
+    
+    def get_validate_data(self):
+        """Retrieve validation data."""
+        return self.dataset_split.get('validate')
 
     def preprocess(self):
+        """Parse all needed information for a dataset, for all split types."""
+
         load_func = 'load_cb513_data' if self.mode == 'cb513' else 'load_pdb_weight_data'
 
-        for split_type in ['train', 'test']:
-            # TODO: Write these to a file to not have to parse every time
+        for split_type in ['train', 'test', 'validate']:
             seq_df, profile = getattr(self, load_func)(self.train_test_files[split_type], self.maxlen_seq)
+            # Limit length to specified max
             tokenizer_input_df = seq_df[seq_df['input'].map(len) <= self.maxlen_seq]
             inputs, targets = tokenizer_input_df.values.T
 
+            # Always define vocab by training dataset
             if split_type == 'train':
                 self.input_tokenizer.fit_on_texts(inputs)
                 self.target_tokenizer.fit_on_texts(targets)
 
+            # Save the raw input/output df, pssm, padded sequence, and labels
             input_data = self.input_tokenizer.texts_to_sequences(inputs)
             x = sequence.pad_sequences(input_data, maxlen=self.maxlen_seq, padding='post')
             target_data = self.target_tokenizer.texts_to_sequences(targets)
@@ -84,9 +116,15 @@ class DataPreprocessor:
     
     @staticmethod
     def load_cb513_data(filename, max_len):
+        """
+        Parse CB513 and retrieve input sequences,
+        output secondary structure, and pssm.
+        """
+
         filepath = os.path.join(DATA_PATH, filename)
         data = np.load(filepath)
 
+        # Extract needed features
         data_reshape = data.reshape(data.shape[0], 700, -1)
         seq_onehot = data_reshape[:,:,0:22]
         q8_onehot = data_reshape[:,:,22:31]
@@ -104,6 +142,11 @@ class DataPreprocessor:
 
     @staticmethod
     def load_pdb_weight_data(filename, max_len):
+        """
+        Parse Weighted PDB and retrieve input sequences,
+        output secondary structure, and pssm.
+        """
+
         filepath = os.path.join(DATA_PATH, filename)
         residue_array, q13_array, pssm_big = list(), list(), list()
 
